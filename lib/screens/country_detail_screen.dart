@@ -26,40 +26,117 @@ class CountryDetailScreen extends StatelessWidget {
         padding: const EdgeInsets.all(
           AppConstants.defaultPadding,
         ), // Espaçamento interno geral
-
-        child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment
-                  .center, // Centraliza os widgets horizontalmente
-
-          children: [
-            // Exibe a bandeira do país a partir da URL
-            Image.network(
-              country.flagUrl,
-              width: 200, // Largura fixa da imagem
-              height: 120, // Altura fixa da imagem
-              fit:
-                  BoxFit.cover, // Ajusta a imagem para cobrir o espaço definido
-              // Caso a imagem não carregue, exibe um ícone padrão de bandeira
-              errorBuilder:
-                  (_, __, ___) => const Icon(Icons.flag_outlined, size: 100),
-            ),
-
-            const SizedBox(height: 24), // Espaço vertical entre imagem e texto
-            // Exibe o nome do país em destaque
-            Text(
-              country.name,
-              style: TextStyle(
-                color: AppConstants.primaryColor, // Cor primária
-                fontSize: 28, // Tamanho grande da fonte
-                fontWeight: FontWeight.bold, // Texto em negrito
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment:
+                CrossAxisAlignment
+                    .center, // Centraliza os widgets horizontalmente
+            children: [
+              // Bandeira
+              Image.network(
+                country.flagUrl,
+                width: 200,
+                height: 120,
+                fit: BoxFit.cover,
+                errorBuilder:
+                    (_, __, ___) => const Icon(Icons.flag_outlined, size: 100),
               ),
-            ),
 
-            // Comentário indicando que pode-se adicionar mais informações do país aqui
-            // como capital, população, região, etc, caso esses dados estejam disponíveis na API
-          ],
+              const SizedBox(height: 24),
+
+              // Nome do país
+              Text(
+                country.name,
+                style: TextStyle(
+                  color: AppConstants.primaryColor,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Informações detalhadas em lista
+              InfoRow(
+                icon: Icons.location_city,
+                label: 'Capital',
+                value: country.capital,
+              ),
+              InfoRow(
+                icon: Icons.people,
+                label: 'População',
+                value: country.population.toString(),
+              ),
+              InfoRow(
+                icon: Icons.map,
+                label: 'Área (km²)',
+                value: country.area.toStringAsFixed(0),
+              ),
+              InfoRow(
+                icon: Icons.monetization_on,
+                label: 'Moeda',
+                value: '${country.currencyName} (${country.currencySymbol})',
+              ),
+              InfoRow(
+                icon: Icons.language,
+                label: 'Idioma oficial',
+                value: country.language,
+              ),
+              InfoRow(
+                icon: Icons.border_all,
+                label: 'Fronteiras',
+                value:
+                    country.borders.isNotEmpty
+                        ? country.borders.join(', ')
+                        : 'Nenhuma',
+              ),
+              InfoRow(
+                icon: Icons.no_drinks,
+                label: 'Sem litoral',
+                value: country.landlocked ? 'Sim' : 'Não',
+              ),
+              InfoRow(
+                icon: Icons.phone,
+                label: 'Código telefônico',
+                value: country.phoneCode,
+              ),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+}
+
+// Widget auxiliar para exibir uma linha de informação com ícone, label e valor
+class InfoRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const InfoRow({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      child: Row(
+        children: [
+          Icon(icon, color: AppConstants.primaryColor),
+          const SizedBox(width: 12),
+          Text('$label: ', style: const TextStyle(fontWeight: FontWeight.bold)),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(fontWeight: FontWeight.normal),
+            ),
+          ),
+        ],
       ),
     );
   }
