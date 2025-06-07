@@ -49,9 +49,7 @@ class CountryProvider with ChangeNotifier {
       print('Erro ao carregar países: $e');
       _isLoading = false;
       notifyListeners();
-      rethrow; // Opcional: você pode querer lançar a exceção para tratar no UI
-      // ou só retornar para não quebrar o app
-      // return;
+      rethrow;
     }
 
     _displayedCountries.clear();
@@ -72,7 +70,7 @@ class CountryProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    // Delay para simular carregamento (opcional)
+    // Delay para simular carregamento
     await Future.delayed(const Duration(milliseconds: 500));
 
     await _loadNextPage();
