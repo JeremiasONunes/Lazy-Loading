@@ -1,7 +1,7 @@
 import 'dart:convert'; // Biblioteca para decodificar JSON
 import 'package:http/http.dart'
     as http; // Biblioteca HTTP para fazer requisições web
-import '../core/constants.dart'; // Importa constantes do projeto (ex: URL da API)
+import '../core/constants.dart'; // Importa constantes do projeto
 import '../core/exceptions.dart'; // Importa classe de exceções personalizadas
 import '../model/country.dart'; // Modelo Country para mapear dados recebidos
 
