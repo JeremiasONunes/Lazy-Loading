@@ -24,17 +24,18 @@ class _CountryListScreenState extends State<CountryListScreen> {
   void initState() {
     super.initState();
 
-    // Obtém o provider para carregar os países iniciais
-    final provider = context.read<CountryProvider>();
-    provider.loadCountries();
+    // Aguarda o primeiro frame para garantir que o context esteja acessível
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<CountryProvider>();
+      provider.loadCountries();
 
-    // Adiciona listener para detectar quando usuário chegou perto do fim da lista
-    _scrollController.addListener(() {
-      // Se o scroll estiver a 120 pixels do fim da lista, carrega mais países
-      if (_scrollController.position.pixels >=
-          _scrollController.position.maxScrollExtent - 120) {
-        provider.loadMore();
-      }
+      // Adiciona o listener de scroll aqui, após garantir que o provider foi acessado
+      _scrollController.addListener(() {
+        if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 120) {
+          provider.loadMore();
+        }
+      });
     });
   }
 

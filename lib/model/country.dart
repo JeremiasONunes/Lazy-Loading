@@ -21,16 +21,16 @@ class Country {
   // Idioma oficial
   final String language;
 
-  // Países fronteiriços (lista de códigos)
+  // Países fronteiriços
   final List<String> borders;
 
-  // Se é país sem litoral
+  // País sem litoral?
   final bool landlocked;
 
   // Código telefônico internacional
   final String phoneCode;
 
-  // Construtor que exige os parâmetros obrigatórios
+  // Construtor principal
   Country({
     required this.name,
     required this.flagUrl,
@@ -45,33 +45,36 @@ class Country {
     required this.phoneCode,
   });
 
-  // Factory constructor para criar um objeto Country a partir de um Map JSON
+  /// Cria uma instância a partir de um JSON (vindo da API)
   factory Country.fromJson(Map<String, dynamic> json) {
+    final currencies = json['currencies'] as Map<String, dynamic>?;
+    final languages = json['languages'] as Map<String, dynamic>?;
+
     return Country(
-      name: json['name']['common'] ?? 'Desconhecido',
-      flagUrl: json['flags']['png'] ?? '',
+      name: json['name']?['common'] ?? 'Desconhecido',
+      flagUrl: json['flags']?['png'] ?? '',
 
       capital:
           (json['capital'] != null && (json['capital'] as List).isNotEmpty)
               ? json['capital'][0]
-              : 'Desconhecida',
+              : '',
 
       population: json['population'] ?? 0,
       area: (json['area'] != null) ? (json['area'] as num).toDouble() : 0.0,
 
       currencyName:
-          (json['currencies'] != null && json['currencies'].isNotEmpty)
-              ? json['currencies'].values.first['name'] ?? 'Desconhecida'
+          (currencies != null && currencies.isNotEmpty)
+              ? currencies.values.first['name'] ?? 'Desconhecida'
               : 'Desconhecida',
 
       currencySymbol:
-          (json['currencies'] != null && json['currencies'].isNotEmpty)
-              ? json['currencies'].values.first['symbol'] ?? ''
+          (currencies != null && currencies.isNotEmpty)
+              ? currencies.values.first['symbol'] ?? ''
               : '',
 
       language:
-          (json['languages'] != null && json['languages'].isNotEmpty)
-              ? json['languages'].values.first
+          (languages != null && languages.isNotEmpty)
+              ? languages.values.first
               : 'Desconhecido',
 
       borders:
@@ -86,6 +89,23 @@ class Country {
                   (json['idd']['suffixes'] as List).isNotEmpty)
               ? '${json['idd']['root']}${json['idd']['suffixes'][0]}'
               : '',
+    );
+  }
+
+  /// Factory para retornar um país vazio (útil para retornos padrão)
+  factory Country.vazio() {
+    return Country(
+      name: '',
+      flagUrl: '',
+      capital: '',
+      population: 0,
+      area: 0.0,
+      currencyName: '',
+      currencySymbol: '',
+      language: '',
+      borders: const [],
+      landlocked: false,
+      phoneCode: '',
     );
   }
 }

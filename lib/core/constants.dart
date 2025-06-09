@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class AppConstants {
   // API
-  static const String apiUrl = 'https://restcountries.com/v3.1/all';
+  static const String apiUrl =
+      'https://restcountries.com/v3.1/independent?status=true';
   static const int pageSize = 10;
 
   // Paleta de cores monocromática analógica

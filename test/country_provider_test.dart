@@ -14,7 +14,7 @@ void main() {
     provider.overrideService(mockService);
   });
 
-  test('01 - Listagem com sucesso', () async {
+  test('01 - Listagem com sucesso (Fluxo principal)', () async {
     final mockCountries = [
       Country(
         name: 'Brasil',
@@ -29,7 +29,6 @@ void main() {
         landlocked: false,
         phoneCode: '+55',
       ),
-      // pode adicionar mais países aqui se quiser
     ];
 
     when(mockService.fetchCountries()).thenAnswer((_) async => mockCountries);
@@ -41,14 +40,14 @@ void main() {
     expect(provider.countries.first.flagUrl, contains('br.png'));
   });
 
-  test('02 - Falha na listagem (lança exceção)', () async {
+  test('02 - Falha na listagem (Erro controlado)', () async {
     when(mockService.fetchCountries()).thenThrow(Exception('Erro na API'));
 
     expect(() async => await provider.loadCountries(), throwsException);
     expect(provider.isLoading, false);
   });
 
-  test('03 - Buscar país específico com sucesso', () async {
+  test('03 - Buscar país específico com sucesso (Fluxo principal)', () async {
     final mockCountries = [
       Country(
         name: 'Brasil',
@@ -84,26 +83,14 @@ void main() {
 
     final brasil = provider.countries.firstWhere(
       (c) => c.name == 'Brasil',
-      orElse:
-          () => Country(
-            name: '',
-            flagUrl: '',
-            capital: '',
-            population: 0,
-            area: 0,
-            currencyName: '',
-            currencySymbol: '',
-            language: '',
-            borders: const [],
-            landlocked: false,
-            phoneCode: '',
-          ),
+      orElse: () => Country.vazio(),
     );
+
     expect(brasil.name, 'Brasil');
     expect(brasil.capital, 'Brasília');
   });
 
-  test('04 - Buscar país inexistente retorna país vazio', () async {
+  test('04 - Buscar país que não existe (Fluxo alternativo)', () async {
     final mockCountries = [
       Country(
         name: 'Brasil',
@@ -126,89 +113,69 @@ void main() {
 
     final inexistente = provider.countries.firstWhere(
       (c) => c.name == 'Japão',
-      orElse:
-          () => Country(
-            name: '',
-            flagUrl: '',
-            capital: '',
-            population: 0,
-            area: 0,
-            currencyName: '',
-            currencySymbol: '',
-            language: '',
-            borders: const [],
-            landlocked: false,
-            phoneCode: '',
-          ),
+      orElse: () => Country.vazio(),
     );
 
     expect(inexistente.name, '');
   });
 
-  test('05 - País com campos vazios', () async {
-    final mockCountries = [
-      Country(
-        name: 'Chile',
-        flagUrl: '',
-        capital: '',
-        population: 0,
-        area: 0,
-        currencyName: '',
-        currencySymbol: '',
-        language: '',
-        borders: const [],
-        landlocked: false,
-        phoneCode: '',
-      ),
-    ];
+  test(
+    '05 - País com campos vazios (Dados incompletos: capital, bandeira)',
+    () async {
+      final mockCountries = [
+        Country(
+          name: 'Chile',
+          flagUrl: '',
+          capital: '',
+          population: 0,
+          area: 0,
+          currencyName: '',
+          currencySymbol: '',
+          language: '',
+          borders: const [],
+          landlocked: false,
+          phoneCode: '',
+        ),
+      ];
 
-    when(mockService.fetchCountries()).thenAnswer((_) async => mockCountries);
+      when(mockService.fetchCountries()).thenAnswer((_) async => mockCountries);
 
-    await provider.loadCountries();
+      await provider.loadCountries();
 
-    final chile = provider.countries.firstWhere(
-      (c) => c.name == 'Chile',
-      orElse:
-          () => Country(
-            name: '',
-            flagUrl: '',
-            capital: '',
-            population: 0,
-            area: 0,
-            currencyName: '',
-            currencySymbol: '',
-            language: '',
-            borders: const [],
-            landlocked: false,
-            phoneCode: '',
-          ),
-    );
+      final chile = provider.countries.firstWhere(
+        (c) => c.name == 'Chile',
+        orElse: () => Country.vazio(),
+      );
 
-    expect(chile.capital, '');
-    expect(chile.flagUrl, '');
-  });
+      expect(chile.capital, '');
+      expect(chile.flagUrl, '');
+    },
+  );
 
-  test('06 - Verifica se fetchCountries foi chamado', () async {
-    final mockCountries = [
-      Country(
-        name: 'Brasil',
-        flagUrl: 'https://flagcdn.com/br.png',
-        capital: 'Brasília',
-        population: 211000000,
-        area: 8515767.0,
-        currencyName: 'Real',
-        currencySymbol: 'R\$',
-        language: 'Portuguese',
-        borders: ['Argentina', 'Paraguay'],
-        landlocked: false,
-        phoneCode: '+55',
-      ),
-    ];
+  test(
+    '06 - Verificar se a função listarPaises() foi chamada (Interação/método)',
+    () async {
+      final mockCountries = [
+        Country(
+          name: 'Brasil',
+          flagUrl: 'https://flagcdn.com/br.png',
+          capital: 'Brasília',
+          population: 211000000,
+          area: 8515767.0,
+          currencyName: 'Real',
+          currencySymbol: 'R\$',
+          language: 'Portuguese',
+          borders: ['Argentina', 'Paraguay'],
+          landlocked: false,
+          phoneCode: '+55',
+        ),
+      ];
 
-    when(mockService.fetchCountries()).thenAnswer((_) async => mockCountries);
+      when(mockService.fetchCountries()).thenAnswer((_) async => mockCountries);
 
-    await provider.loadCountries();
+      await provider.loadCountries();
 
-    verify(mockService.fetchCountries()).called(1);
-  });
+      verify(mockService.fetchCountries()).called(1);
+    },
+  );
 }
